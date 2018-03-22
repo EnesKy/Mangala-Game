@@ -5,7 +5,11 @@
  */
 package Mangala;
 
+import static Mangala.Mangala.mangala;
+import MangalaCl.Client;
 import java.awt.Font;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JOptionPane;
 
 public class Entry extends javax.swing.JFrame {
@@ -14,6 +18,19 @@ public class Entry extends javax.swing.JFrame {
         initComponents();
         this.setResizable(false);
         this.setLocation(250, 250);
+        this.setDefaultCloseOperation(this.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowClosing(WindowEvent e){
+            int n = JOptionPane.showConfirmDialog(e.getWindow(),"Çıkış yapmakta ısrarcı mıyız?","Çıkış yapılıyor...",JOptionPane.YES_NO_OPTION);
+            if (n == 0) {
+                e.getWindow().dispose();
+            }
+            else if(n == 1) {
+                System.out.println("Çıkış iptal edildi.");
+            }
+            }
+        });
         jLabel1.setFont(new Font("Courier New", Font.BOLD, 20));
     }
 
@@ -58,10 +75,6 @@ public class Entry extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(319, 319, 319)
-                .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
                 .addGap(299, 299, 299)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(exit, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -71,6 +84,10 @@ public class Entry extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 157, Short.MAX_VALUE)
                 .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(143, 143, 143))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(311, 311, 311)
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -108,12 +125,21 @@ public class Entry extends javax.swing.JFrame {
     private void startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startActionPerformed
         // TODO add your handling code here:
         String s = (String)JOptionPane.showInputDialog( this,"","Takma adınızı giriniz.", JOptionPane.PLAIN_MESSAGE,null, null, "Oyuncu");
-        System.out.println(s);
+        //System.out.println(s);
         if (s == null) {
             System.out.println("Oyuna giriş yapılmadı.");
         }
         else {
-            MangalaForm mangala = new MangalaForm();
+            //CONNECT
+            //Client.Start("127.0.0.1", 2000);           
+
+            //Oyun sayfasını aç
+            Mangala mangala = new Mangala();
+            mangala.getnickL().setText(s); 
+            //b1.setEnabled(false); b2.setEnabled(false); b3.setEnabled(false); b4.setEnabled(false); b5.setEnabled(false); b6.setEnabled(false);
+            /*mangala.geta1().setEnabled(false); mangala.geta2().setEnabled(false); mangala.geta3().setEnabled(false);
+            mangala.geta4().setEnabled(false); mangala.geta5().setEnabled(false); mangala.geta6().setEnabled(false);
+            mangala.getaH().setEnabled(false); //bH.setEnabled(false);*/
             mangala.setVisible(true);
             setVisible(false);
         }
