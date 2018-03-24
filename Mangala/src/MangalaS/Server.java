@@ -18,7 +18,6 @@ import Mangala.Message;
  *
  * @author nskmlylm
  */
-
 class ServerThread extends Thread {
 
     public void run() {
@@ -26,15 +25,12 @@ class ServerThread extends Thread {
         while (!Server.serverSocket.isClosed()) {
             try {
                 Server.Display("Client Bekleniyor...");
-                // clienti bekleyen satır
-                //bir client gelene kadar bekler
-                Socket clientSocket = Server.serverSocket.accept();
-                //client gelirse bu satıra geçer
+                Socket clientSocket = Server.serverSocket.accept();//Client gelene kadar Blocking
                 Server.Display("Client Geldi...");
                 //gelen client soketinden bir sclient nesnesi oluştur
                 //bir adet id de kendimiz verdik
                 SClient nclient = new SClient(clientSocket, Server.IdClient);
-                
+
                 Server.IdClient++;
                 //clienti listeye ekle.
                 Server.Clients.add(nclient);
@@ -49,7 +45,9 @@ class ServerThread extends Thread {
 }
 
 public class Server {
+
     //server soketi eklemeliyiz
+
     public static ServerSocket serverSocket;
     public static int IdClient = 0;
     // Serverın dileyeceği port
@@ -78,9 +76,7 @@ public class Server {
     }
 
     public static void Display(String msg) {
-
         System.out.println(msg);
-
     }
 
     // serverdan clietlara mesaj gönderme

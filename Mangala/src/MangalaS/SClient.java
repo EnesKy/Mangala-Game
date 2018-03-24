@@ -65,10 +65,7 @@ public class SClient {
             //client bağlı olduğu sürece dönsün
             while (TheClient.soket.isConnected()) {
                 try {
-                    //mesajı bekleyen kod satırı
                     Message received = (Message) (TheClient.sInput.readObject());
-                    //mesaj gelirse bu satıra geçer
-                    //mesaj tipine göre işlemlere ayır
                     switch (received.type) {
                         case Name:
                             TheClient.name = received.content.toString();

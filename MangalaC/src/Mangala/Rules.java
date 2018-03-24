@@ -5,6 +5,8 @@
  */
 package Mangala;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -20,7 +22,9 @@ public class Rules extends javax.swing.JFrame {
         initComponents();
         this.setLocation(901, 200);
         this.setResizable(false);
-        isOpen = true;
+        this.setBackground(Color.DARK_GRAY);
+        jLabel2.setFont(new Font("Courier New", Font.BOLD, 20));
+        //isOpen = true;
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 isOpen = false;
@@ -41,7 +45,7 @@ public class Rules extends javax.swing.JFrame {
                 + "boş kuyusunun karşısındaki kuyuda da rakibine ait taş varsa, hem rakibinin kuyusundaki taşları alır, hem de kendi boş kuyusuna\n"
                 + " bıraktığı taşı alıp hazinesine koyar. Hamle sırası rakibine geçer.\n" +
                 "\n" +
-                "Kural 3: Oyunculardan herhangi birinin bölgesinde yer alan taşlar bittiğinde oyun seti biter. Oyunda kendi bölgesinde taşları\n"
+                "Kural 4: Oyunculardan herhangi birinin bölgesinde yer alan taşlar bittiğinde oyun seti biter. Oyunda kendi bölgesinde taşları\n"
                 + " ilk biten oyuncu, rakibinin bölgesinde bulunan tüm taşları da kazanır. Dolayısıyla, oyunun dinamiği son ana kadar hiç düşmez.");
         jTextArea1.setEnabled(false);
         this.setDefaultCloseOperation(this.DISPOSE_ON_CLOSE);

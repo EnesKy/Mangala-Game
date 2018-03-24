@@ -1,11 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Mangala;
 
-import static Mangala.Mangala.mangala;
 import MangalaCl.Client;
 import java.awt.Font;
 import java.awt.event.WindowAdapter;
@@ -13,25 +7,27 @@ import java.awt.event.WindowEvent;
 import javax.swing.JOptionPane;
 
 public class Entry extends javax.swing.JFrame {
-
+    
+    static Rules r = new Rules();
+    
     public Entry() {
         initComponents();
         this.setResizable(false);
         this.setLocation(250, 250);
         this.setDefaultCloseOperation(this.DO_NOTHING_ON_CLOSE);
+        jLabel1.setFont(new Font("Courier New", Font.BOLD, 20));
         addWindowListener(new WindowAdapter(){
             @Override
             public void windowClosing(WindowEvent e){
             int n = JOptionPane.showConfirmDialog(e.getWindow(),"Çıkış yapmakta ısrarcı mıyız?","Çıkış yapılıyor...",JOptionPane.YES_NO_OPTION);
-            if (n == 0) {
+                if (n == 0) {
                 e.getWindow().dispose();
-            }
-            else if(n == 1) {
+                }
+                else if(n == 1) {
                 System.out.println("Çıkış iptal edildi.");
-            }
+                }
             }
         });
-        jLabel1.setFont(new Font("Courier New", Font.BOLD, 20));
     }
 
     @SuppressWarnings("unchecked")
@@ -112,12 +108,14 @@ public class Entry extends javax.swing.JFrame {
 
     private void rulesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rulesActionPerformed
         // TODO add your handling code here:
+        
         if (Rules.isOpen) {
             System.out.println(" Already Open");
+            r.toFront();
         }
         else{
-            Rules kurallar= new Rules();
-            kurallar.setVisible(true);
+            Rules.isOpen = true;
+            r.setVisible(true);
         }
         
     }//GEN-LAST:event_rulesActionPerformed
@@ -130,12 +128,12 @@ public class Entry extends javax.swing.JFrame {
             System.out.println("Oyuna giriş yapılmadı.");
         }
         else {
-            //CONNECT
-            //Client.Start("127.0.0.1", 2000);           
-
             //Oyun sayfasını aç
             Mangala mangala = new Mangala();
             mangala.getnickL().setText(s); 
+            //CONNECT
+            Client.Start("127.0.0.1", 500);           
+
             //b1.setEnabled(false); b2.setEnabled(false); b3.setEnabled(false); b4.setEnabled(false); b5.setEnabled(false); b6.setEnabled(false);
             /*mangala.geta1().setEnabled(false); mangala.geta2().setEnabled(false); mangala.geta3().setEnabled(false);
             mangala.geta4().setEnabled(false); mangala.geta5().setEnabled(false); mangala.geta6().setEnabled(false);
@@ -148,8 +146,14 @@ public class Entry extends javax.swing.JFrame {
     }//GEN-LAST:event_startActionPerformed
 
     private void exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitActionPerformed
-        // TODO add your handling code here:
+        // TODO add your handling code here: 
+        
+        if (Rules.isOpen) {
+            r.setVisible(false);
+            r.dispose();
+        }
         this.dispose();
+        
     }//GEN-LAST:event_exitActionPerformed
 
     /**
