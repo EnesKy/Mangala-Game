@@ -8,22 +8,19 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import Mangala.Message;
-import static Mangala.Message.Message_Type.Selected;
+import static Mangala.Message.Message_Type.Pits;
 
 public class SClient {
+
     int id;
     public String name = "NoName";
     Socket soket;
     ObjectOutputStream sOutput;
     ObjectInputStream sInput;
-    //clientten gelenleri dinleme threadi
-    Listen listenThread;
-    //cilent eşleştirme thredi
-    PairingThread pairThread;
-    //rakip client
-    SClient rival;
-    //eşleşme durumu
-    public boolean paired = false;
+    Listen listenThread;//clientten gelenleri dinleme threadi
+    PairingThread pairThread;//cilent eşleştirme thredi
+    SClient rival;//rakip client
+    public boolean paired = false;//eşleşme durumu
 
     public SClient(Socket gelenSoket, int id) {
         this.soket = gelenSoket;
@@ -37,7 +34,6 @@ public class SClient {
         //thread nesneleri
         this.listenThread = new Listen(this);
         this.pairThread = new PairingThread(this);
-
     }
 
     //client mesaj gönderme
@@ -47,20 +43,16 @@ public class SClient {
         } catch (IOException ex) {
             Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
     //client dinleme threadi
     //her clientin ayrı bir dinleme thredi var
     class Listen extends Thread {
-
         SClient TheClient;
-
         //thread nesne alması için yapıcı metod
         Listen(SClient TheClient) {
             this.TheClient = TheClient;
         }
-
         public void run() {
             //client bağlı olduğu sürece dönsün
             while (TheClient.soket.isConnected()) {
@@ -75,43 +67,40 @@ public class SClient {
                         case Disconnect:
                             break;
                         case Text:
-                            //gelen metni direkt rakibe gönder
+                            //
                             Server.Send(TheClient.rival, received);
                             break;
-                        case Selected:
+                        case Pits:
                             //gelen seçim yapıldı mesajını rakibe gönder
                             Server.Send(TheClient.rival, received);
+                            System.out.println("Rakip meşazı aldı");
+                            break;
+                        case WhosTurn:
+                            
                             break;
                         case Bitis:
                             break;
-
                     }
-
                 } catch (IOException ex) {
                     Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
                     //client bağlantısı koparsa listeden sil
                     Server.Clients.remove(TheClient);
-
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(SClient.class.getName()).log(Level.SEVERE, null, ex);
                     //client bağlantısı koparsa listeden sil
                     Server.Clients.remove(TheClient);
                 }
             }
-
         }
     }
 
     //eşleştirme threadi
     //her clientin ayrı bir eşleştirme thredi var
     class PairingThread extends Thread {
-
         SClient TheClient;
-
         PairingThread(SClient TheClient) {
             this.TheClient = TheClient;
         }
-
         public void run() {
             //client bağlı ve eşleşmemiş olduğu durumda dön
             while (TheClient.soket.isConnected() && TheClient.paired == false) {
@@ -120,7 +109,7 @@ public class SClient {
                     //sadece bir client içeri grebilir
                     //diğerleri release olana kadar bekler
                     Server.pairTwo.acquire(1);
-                    
+
                     //client eğer eşleşmemişse gir
                     if (!TheClient.paired) {
                         SClient crival = null;
@@ -151,6 +140,16 @@ public class SClient {
 
                         Message msg2 = new Message(Message.Message_Type.RivalConnected);
                         msg2.content = TheClient.rival.name;
+                        Server.Send(TheClient, msg2);
+                        
+                        
+                        //Oynama hakkının kimde olduğunu belirtmek için 1 veya 2 göndererek kontrol yapılır
+                        msg1 = new Message(Message.Message_Type.WhosTurn);
+                        msg1.content = 1;
+                        Server.Send(TheClient.rival, msg1);
+
+                        msg2 = new Message(Message.Message_Type.WhosTurn);
+                        msg2.content = 2;
                         Server.Send(TheClient, msg2);
                     }
                     //lock mekanizmasını servest bırak

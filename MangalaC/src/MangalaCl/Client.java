@@ -1,4 +1,5 @@
 package MangalaCl;
+
 /**
  * Enes Kamil YILMAZ 1521221039
  */
@@ -18,25 +19,31 @@ class Listen extends Thread {
     public void run() {
         while (Client.socket.isConnected()) {
             try {
-                Message received = (Message) (sInput.readObject());//Mesaj gelmesini beklediği için Blocking yapar.
+                //Mesaj gelmesini beklediği için Blocking yapar.
+                Message received = (Message) (sInput.readObject()); 
                 //mesaj gelirse bu satıra geçer
                 switch (received.type) {
-                    case Dizi:
-                        break;
                     case RivalConnected:
                         String nick = received.content.toString();
                         Mangala.mangala.getrivalNick().setText(nick);
-                        // Mangala.mangala.btn_pick.setEnabled(true);
-                        // Mangala.mangala.btn_send_message.setEnabled(true);
-                        //Mangala.mangala.th.start();
+                        Mangala.mangala.th.start();
+                        System.out.println("RivalConnected");
                         break;
                     case Disconnect:
                         break;
-                    case Text:
-                        //Mangala.mangala.txt_receive.setText(received.content.toString());
+                    case Text://mesaj yollama işlemi olduğunu belirtmek için kullanılır.
+                        Mangala.mangala.sended = received.content.toString(); 
                         break;
-                    case Selected:
-                        Mangala.mangala.RivalSelection = (int) received.content;
+                    case Pits:
+                        Mangala.mangala.RivalsPit = (int[][]) received.content;
+                        for (int i = 0; i < 2; i++){for (int j = 0; j < 7; j++) {
+                         System.out.print(Mangala.mangala.RivalsPit[i][j]+" - ");
+                         }System.out.println("");}
+                        Mangala.mangala.pit = Mangala.mangala.RivalsPit; ////????????
+                        System.out.println("mesaj geldi");
+                        break;
+                    case WhosTurn:
+                        Mangala.mangala.turn = (int)received.content;
                         break;
                     case Bitis:
                         break;
@@ -73,12 +80,12 @@ public class Client {
             Message msg = new Message(Message.Message_Type.Name);//ilk mesaj olarak isim gönderiyorum
             msg.content = Mangala.mangala.getnickL().getText();
             Client.Send(msg);
-            
+
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public static void Stop() {
         try {
             if (Client.socket != null) {

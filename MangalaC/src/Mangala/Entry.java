@@ -133,11 +133,7 @@ public class Entry extends javax.swing.JFrame {
             mangala.getnickL().setText(s); 
             //CONNECT
             Client.Start("127.0.0.1", 500);           
-
-            //b1.setEnabled(false); b2.setEnabled(false); b3.setEnabled(false); b4.setEnabled(false); b5.setEnabled(false); b6.setEnabled(false);
-            /*mangala.geta1().setEnabled(false); mangala.geta2().setEnabled(false); mangala.geta3().setEnabled(false);
-            mangala.geta4().setEnabled(false); mangala.geta5().setEnabled(false); mangala.geta6().setEnabled(false);
-            mangala.getaH().setEnabled(false); //bH.setEnabled(false);*/
+            
             mangala.setVisible(true);
             setVisible(false);
         }
