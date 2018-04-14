@@ -1,5 +1,4 @@
 package MangalaCl;
-
 /**
  * Enes Kamil YILMAZ 1521221039
  */
@@ -30,20 +29,24 @@ class Listen extends Thread {
                         System.out.println("RivalConnected");
                         break;
                     case Disconnect:
+                       if ((int)received.content == 1) {
+                          Mangala.mangala.finish = true;
+                           }
+                       else if ((int)received.content == 0) {
+                          Mangala.mangala.finish = true;
+                           }
                         break;
-                    case Text://mesaj yollama işlemi olduğunu belirtmek için kullanılır.
-                        Mangala.mangala.sended = received.content.toString(); 
+                    case Text:
                         break;
                     case Pits:
-                        Mangala.mangala.RivalsPit = (int[][]) received.content;
-                        for (int i = 0; i < 2; i++){for (int j = 0; j < 7; j++) {
-                         System.out.print(Mangala.mangala.RivalsPit[i][j]+" - ");
-                         }System.out.println("");}
-                        Mangala.mangala.pit = Mangala.mangala.RivalsPit; ////????????
-                        System.out.println("mesaj geldi");
+                        Mangala.mangala.pit = (int[][]) received.content;
                         break;
                     case WhosTurn:
                         Mangala.mangala.turn = (int)received.content;
+                        System.out.println("received -- " + Mangala.mangala.turn);
+                        break;
+                    case Sent:
+                        Mangala.mangala.sent2 = (String) received.content;
                         break;
                     case Bitis:
                         break;

@@ -9,7 +9,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import Mangala.Entry;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,40 +26,47 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 public class Mangala extends javax.swing.JFrame implements ActionListener {
-
+    
     public static Mangala mangala;
     public Thread th;
-    public int turn = 0;
-    boolean sent = false;
-    public String sended="";
+    public int turn = 3;
+    public boolean sent = false, oneMore = false, finish = false;
+    public String sent2="";
     public int[][] pit = new int[2][7];
     public int[][] RivalsPit = new int[2][7];
-    public int[][] temp = new int[2][7];
-    //Bu değerleri 2.clienta verirken ters yüz et.
     // 6,5,4,3,2,1,0
     // 0,1,2,3,4,5,6
-
+    
     public Mangala() {
         initComponents();
         mangala = this;
-        this.setBackground(Color.darkGray);
         this.setLocation(250, 250);
+        this.setSize(625, 390);
         this.setResizable(false);
         this.setDefaultCloseOperation(this.DO_NOTHING_ON_CLOSE);
         jLabel1.setFont(new Font("Courier New", Font.BOLD, 20));
+        jLabel2.setFont(new Font("Courier New", Font.BOLD, 12));
+        jLabel3.setFont(new Font("Courier New", Font.BOLD, 12));
+        jLabel1.setForeground(Color.white);
+        rivalNick.setForeground(Color.white);
+        nickL.setForeground(Color.white);
+        jLabel2.setForeground(Color.white);
+        jLabel3.setForeground(Color.white);
+        
+        rivalsTurn.setVisible(false);
+        myTurn.setVisible(false);
         
         try {
             File f = new File("C:\\Users\\nskml\\Desktop\\Dosyalar\\3.Sınıf\\Bahar Dönemi\\Bilgisayar Ağları\\Lab\\Proje1\\Mangala-Game\\MangalaC\\src\\images\\redArrow.png");
             BufferedImage bi = ImageIO.read(f);
             Image scaled = bi.getScaledInstance(75, 75, Image.SCALE_SMOOTH);
             ImageIcon icon = new ImageIcon(scaled);
-            rakipHak.setIcon(icon);
-            yourHak.setIcon(icon);
+            rivalsTurn.setIcon(icon);
+            myTurn.setIcon(icon);
         } catch (IOException ex) {
             Logger.getLogger(Mangala.class.getName()).log(Level.SEVERE, null, ex);
         }
-        rakipHak.setVisible(false);
-        yourHak.setVisible(false);
+        
         
         addWindowListener(new WindowAdapter() {
             @Override
@@ -81,50 +91,82 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         
         th = new Thread(() -> {
             
-             b1.setEnabled(true);b2.setEnabled(true);b3.setEnabled(true);
-        b4.setEnabled(true);b5.setEnabled(true);b6.setEnabled(true);
-        a1.setEnabled(true);a2.setEnabled(true);a3.setEnabled(true);
-        a4.setEnabled(true);a5.setEnabled(true);a6.setEnabled(true);
-        aH.setEnabled(true);bH.setEnabled(true);
+            enableButtons(true);
             
-            //soket bağlıysa dönsün
-            while (Client.socket.isConnected()) {
+            while (Client.socket.isConnected() && !finish) {
                 
-                 if (turn == 1) {
-                    yourHak.setVisible(true);
-                    rakipHak.setVisible(false);
-                 }
-                 else {
-                     rakipHak.setVisible(true);
-                     yourHak.setVisible(false);
-                 }
-                
-                if (sended.equals("ok")) {
-                    diziAktar(RivalsPit);
-                    sended = "";
+                if (gameOver(pit) == 1) {
+                    System.out.println(nickL + "IS WON CONGRATS!!!");
+                    JOptionPane.showMessageDialog(this,nickL + "IS WON CONGRATS!!! Score = " + pit[1][6], "GAME OVER", JOptionPane.INFORMATION_MESSAGE);
+                    enableButtons(false);
+                    Message msg = new Message(Message.Message_Type.Disconnect);
+                    msg.content = 1;
+                    Client.Send(msg);
+                    this.dispose();
+                    Entry giris = new Entry();
+                    giris.setVisible(true);
+                    try {
+                        Client.socket.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(Mangala.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                else if(gameOver(pit) == 0){
+                    System.out.println(rivalNick + "IS WON CONGRATS!!!");
+                    JOptionPane.showMessageDialog(this,rivalNick + "IS WON CONGRATS!!! Score = " + pit[0][0], "GAME OVER", JOptionPane.INFORMATION_MESSAGE);
+                    enableButtons(false);
+                    Message msg = new Message(Message.Message_Type.Disconnect);
+                    msg.content = 0;
+                    Client.Send(msg);
+                    this.dispose();
+                    Entry giris = new Entry();
+                    giris.setVisible(true);
+                    try {
+                        Client.socket.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(Mangala.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
                 
+                if (turn == 1) {
+                    myTurn.setVisible(true);
+                    rivalsTurn.setVisible(false);
+                }
+                else if(turn == 0) {
+                    myTurn.setVisible(false);
+                    rivalsTurn.setVisible(true); 
+                }
+                
+                if (sent2.equals("ok")) {
+                    diziAktar(pit);
+                    sent2 = "tamam";
+                    if (turn == 1) {
+                    turn = 0;
+                    }
+                    else if(turn == 0) {
+                    turn = 1;
+                    }
+                }
                 try {
                     th.sleep(100);
-                    if (sent) {
-                        th.sleep(2000); //az bi aktarma süresi ekleyelim.
-                        //diziAktar(RivalsPit);
-                        sent = false;
+                    if (sent && sent2.equals("tamam")) {
+                        //th.sleep(2000); //az bi aktarma süresi ekleyelim.
+                        diziAktar(pit);
                         pit = RivalsPit;
-                        //diziAktar(pit);//////????
+                        sent = false;
+                        sent2 = "";
+                        RivalsPit = new int[2][7];
                     }                    
                 } catch (InterruptedException ex) {
                     Logger.getLogger(Mangala.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-                
+             if (!Client.socket.isConnected()) {
+                 enableButtons(false);
+            }
         });
         
-        b1.setEnabled(false);b2.setEnabled(false);b3.setEnabled(false);
-        b4.setEnabled(false);b5.setEnabled(false);b6.setEnabled(false);
-        a1.setEnabled(false);a2.setEnabled(false);a3.setEnabled(false);
-        a4.setEnabled(false);a5.setEnabled(false);a6.setEnabled(false);
-        aH.setEnabled(false);bH.setEnabled(false);
+        enableButtons(false);
         
         b1.setFocusable(false);b2.setFocusable(false);b3.setFocusable(false);
         b4.setFocusable(false);b5.setFocusable(false);b6.setFocusable(false);
@@ -142,10 +184,6 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         aH.setHorizontalAlignment(SwingConstants.CENTER);bH.setHorizontalAlignment(SwingConstants.CENTER);
         nickL.setHorizontalTextPosition(SwingConstants.CENTER);
         rivalNick.setHorizontalTextPosition(SwingConstants.CENTER);
-
-        /*JLabel label = new JLabel( new ImageIcon(new ImageIcon(ImageIO.read(this.getClass().getResource("/images/kuyu.jpg"))).getImage()) );
-         label.setLayout( new BorderLayout() );
-         label.add( a1 );*/
         
         a1.setActionCommand("a1"); a1.addActionListener(this);
         a2.setActionCommand("a2"); a2.addActionListener(this);
@@ -188,25 +226,34 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         a4 = new javax.swing.JButton();
         a5 = new javax.swing.JButton();
         a6 = new javax.swing.JButton();
-        rakipHak = new javax.swing.JLabel();
-        yourHak = new javax.swing.JLabel();
+        rivalsTurn = new javax.swing.JLabel();
+        myTurn = new javax.swing.JLabel();
+        bck = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         aH.setText("Hazine1");
         aH.setPreferredSize(new java.awt.Dimension(60, 24));
+        getContentPane().add(aH, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 90, 61, 228));
+        aH.getAccessibleContext().setAccessibleName("");
 
         bH.setText("Hazine2");
         bH.setPreferredSize(new java.awt.Dimension(60, 24));
+        getContentPane().add(bH, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, 61, 228));
 
         rulesB.setText("Kurallar");
+        getContentPane().add(rulesB, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 20, 86, -1));
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Mangala");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 40, -1, -1));
 
         jLabel2.setText("<==");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 120, -1, -1));
 
         jLabel3.setText("==>");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 270, -1, -1));
 
         nickL.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         nickL.setText("Nick Name");
@@ -214,6 +261,8 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         nickL.setMaximumSize(new java.awt.Dimension(100, 16));
         nickL.setMinimumSize(new java.awt.Dimension(100, 16));
         nickL.setPreferredSize(new java.awt.Dimension(100, 16));
+        getContentPane().add(nickL, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 220, 150, -1));
+        getContentPane().add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(252, 70, 120, 10));
 
         newGameB.setText("Yeni Oyun");
         newGameB.addActionListener(new java.awt.event.ActionListener() {
@@ -221,6 +270,7 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
                 newGameBActionPerformed(evt);
             }
         });
+        getContentPane().add(newGameB, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 20, -1, -1));
 
         rivalNick.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         rivalNick.setText("Rakip Bekleniyor");
@@ -228,172 +278,54 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         rivalNick.setMaximumSize(new java.awt.Dimension(100, 16));
         rivalNick.setMinimumSize(new java.awt.Dimension(100, 16));
         rivalNick.setPreferredSize(new java.awt.Dimension(100, 16));
+        getContentPane().add(rivalNick, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 180, 190, -1));
 
         b6.setText("1");
+        getContentPane().add(b6, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 100, 57, 57));
 
         b3.setText("1");
+        getContentPane().add(b3, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 100, 57, 57));
 
         b4.setText("1");
+        getContentPane().add(b4, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 100, 57, 57));
 
         b2.setText("1");
+        getContentPane().add(b2, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 100, 57, 57));
 
         a3.setText("1");
+        getContentPane().add(a3, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 250, 57, 57));
 
         b1.setText("1");
+        getContentPane().add(b1, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 100, 57, 57));
 
         b5.setText("1");
+        getContentPane().add(b5, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 100, 57, 57));
 
         a1.setText("1");
+        getContentPane().add(a1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 250, 57, 57));
 
         a2.setText("1");
+        getContentPane().add(a2, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 250, 57, 57));
 
         a4.setText("1");
+        getContentPane().add(a4, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 250, 57, 57));
 
         a5.setText("1");
+        getContentPane().add(a5, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 250, 57, 57));
 
         a6.setText("1");
+        getContentPane().add(a6, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 250, 57, 57));
 
-        rakipHak.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        rakipHak.setToolTipText("");
+        rivalsTurn.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        rivalsTurn.setToolTipText("");
+        getContentPane().add(rivalsTurn, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 170, 77, 30));
+        getContentPane().add(myTurn, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 210, 77, 26));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(256, 256, 256)
-                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(bH, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(9, 9, 9)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(yourHak, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(42, 42, 42))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel2)
-                                                .addGap(9, 9, 9)
-                                                .addComponent(b6, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(13, 13, 13)
-                                                .addComponent(b5, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(13, 13, 13))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(a1, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(12, 12, 12)
-                                                .addComponent(a2, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(b4, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(13, 13, 13)
-                                                .addComponent(b3, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(a3, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(13, 13, 13)
-                                                .addComponent(a4, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGap(15, 15, 15)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(nickL, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addComponent(rivalNick, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGap(13, 13, 13)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addGroup(layout.createSequentialGroup()
-                                                        .addComponent(b2, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                        .addComponent(b1, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                    .addGroup(layout.createSequentialGroup()
-                                                        .addComponent(a5, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                        .addComponent(a6, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGap(18, 18, 18)
-                                                .addComponent(rakipHak, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(93, 93, 93)
-                                .addComponent(rulesB, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(aH, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(newGameB))))
-                .addContainerGap(28, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
-                        .addComponent(jLabel1)
-                        .addGap(6, 6, 6))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(rulesB)
-                            .addComponent(newGameB))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(10, 10, 10)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(bH, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(aH, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addComponent(jLabel2))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(b6, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(b5, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(b2, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(b1, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(rakipHak, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(b4, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(b3, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(rivalNick, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(21, 21, 21)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(yourHak, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(nickL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(a3, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(a2, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(a1, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(a4, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(a5, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(a6, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel3)))))
-                .addContainerGap(30, Short.MAX_VALUE))
-        );
-
-        aH.getAccessibleContext().setAccessibleName("");
+        bck.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        bck.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/background.jpg"))); // NOI18N
+        bck.setText(".");
+        bck.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        getContentPane().add(bck, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 620, 420));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -404,26 +336,50 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         switch (action) {
             case "a1":
                 System.out.println("a1 pressed!");
+                if (!myTurn.isVisible()) {
+                    JOptionPane.showMessageDialog(this, "Sıra rakipte", "Yanlış Kuyu", JOptionPane.ERROR_MESSAGE);
+                    break;
+                }
                 gamePlay("a1");
                 break;
             case "a2":
                 System.out.println("a2 pressed!");
+                if (!myTurn.isVisible()) {
+                    JOptionPane.showMessageDialog(this, "Sıra rakipte", "Yanlış Kuyu", JOptionPane.ERROR_MESSAGE);
+                    break;
+                }
                 gamePlay("a2");
                 break;
             case "a3":
                 System.out.println("a3 pressed!");
+                if (!myTurn.isVisible()) {
+                    JOptionPane.showMessageDialog(this, "Sıra rakipte", "Yanlış Kuyu", JOptionPane.ERROR_MESSAGE);
+                    break;
+                }
                 gamePlay("a3");
                 break;
             case "a4":
                 System.out.println("a4 pressed!");
+                if (!myTurn.isVisible()) {
+                    JOptionPane.showMessageDialog(this, "Sıra rakipte", "Yanlış Kuyu", JOptionPane.ERROR_MESSAGE);
+                    break;
+                }
                 gamePlay("a4");
                 break;
             case "a5":
                 System.out.println("a5 pressed!");
+                if (!myTurn.isVisible()) {
+                    JOptionPane.showMessageDialog(this, "Sıra rakipte", "Yanlış Kuyu", JOptionPane.ERROR_MESSAGE);
+                    break;
+                }
                 gamePlay("a5");
                 break;
             case "a6":
                 System.out.println("a6 pressed!");
+                if (!myTurn.isVisible()) {
+                    JOptionPane.showMessageDialog(this, "Sıra rakipte", "Yanlış Kuyu", JOptionPane.ERROR_MESSAGE);
+                    break;
+                }
                 gamePlay("a6");
                 break;
             case "b1":
@@ -460,6 +416,27 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         }
     }
     
+    public void enableButtons(boolean b){
+        b1.setEnabled(b);b2.setEnabled(b);b3.setEnabled(b);
+        b4.setEnabled(b);b5.setEnabled(b);b6.setEnabled(b);
+        a1.setEnabled(b);a2.setEnabled(b);a3.setEnabled(b);
+        a4.setEnabled(b);a5.setEnabled(b);a6.setEnabled(b);
+        aH.setEnabled(b);bH.setEnabled(b);
+    }
+    
+    public int gameOver(int [][] a){
+        if (a[0][1] == 0 && a[0][2] == 0 && a[0][3] == 0 && a[0][4] == 0 && a[0][5] == 0 && a[0][6] == 0) {
+            a[0][0] = a[1][0] + a[1][1] + a[1][2] + a[1][3] + a[1][4] + a[1][5];
+            a[1][0] = a[1][1] = a[1][2] = a[1][3] = a[1][4] = a[1][5] = 0 ;
+            return 0; //if 0 return rivalNick
+        } 
+        if (a[1][0] == 0 && a[1][1] == 0 && a[1][2] == 0 && a[1][3] == 0 && a[1][4] == 0 && a[1][5] == 0) {
+            a[1][6] = a[0][1] + a[0][2] + a[0][3] + a[0][4] + a[0][5] + a[0][6];
+            a[0][1] = a[0][2] = a[0][3] = a[0][4] = a[0][5] = a[0][6] = 0 ;
+            return 1; // if 1 return nickL
+        }
+        return 2;
+    }
     
     public void diziDoldur() {
         for (int i = 0; i < 2; i++) {
@@ -474,7 +451,7 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
     public void diziCevir() {
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 7; j++) {
-                temp[i][j] = pit[(i + 1) % 2][6 - j];
+                RivalsPit[i][j] = pit[(i + 1) % 2][6 - j];
             }
         }
     }
@@ -497,8 +474,9 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
                 return 0;
             } else if (pitValue > 1 && pitValue <= 7) {
                 for (int i = 0; i < pitValue - 1; i++) {
-                    if (i + pitNo < 7) //Alt sıra için
+                    if (i + pitNo < 7){ //Alt oneMore için
                         pit[1][i + pitNo]++;
+                    }
                     else { //üst sıraya geçince...
                         passed = true;
                         pit[0][6 - temp]++;
@@ -512,7 +490,7 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
                             pit[0][lastIndex] = 0;
                         }
                 return 1;
-            } else if (pitValue > 7) { //TODO burada sıkıntı var hallet bakam
+            } else if (pitValue > 7) { 
                 pitValue--;//İlk kuyuya 1 tane bıraktık.
                 while (pitNo<7) {//Alt bölgedeki işlemler...                    
                     pit[1][pitNo]++;
@@ -590,24 +568,30 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         diziAktar(pit);
         
         if (Client.socket.isConnected()) {//TODO bağlantı yoksa , rakip gelmediyse oyuna başlatma izin verme
+                        
             Message msg = new Message(Message.Message_Type.Pits);
             diziCevir();
-            RivalsPit = temp;
+            System.out.println("RivalsPit karşıya yollandı.");
             msg.content = RivalsPit;
             Client.Send(msg);
             
-            Message msg2 = new Message(Message.Message_Type.Text);
-            msg2.content = "ok";
+            Message msg2 = new Message(Message.Message_Type.Sent);
+            sent2 = "ok";
+            msg2.content = sent2;
             Client.Send(msg2);
-            sent = true;
+            sent = true;       
             
-            Message msg3 = new Message(Message.Message_Type.WhosTurn);
-            msg3.content = 1;
-            Client.Send(msg3);
-            turn = 0;
+           /* Message msg3 = new Message(Message.Message_Type.WhosTurn);
+            if(turn == 0){
+                msg3.content = 1;
+                turn = 1;
+            }
+            else{
+                msg3.content = 0;
+                turn = 0;
+            }
+            Client.Send(msg3);*/
              
-            rakipHak.setVisible(true);
-            yourHak.setVisible(false);
             System.out.println("gameplayden mesaj yollandı");
         }
         else
@@ -619,6 +603,12 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         // TODO add your handling code here:
         System.out.println("DISCONNECT AND GO TO ENTRY FRAME");
         //DISCONNECT
+        finish = true;
+        try {
+            Client.socket.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Mangala.class.getName()).log(Level.SEVERE, null, ex);
+        }
         this.dispose();
         Entry giris = new Entry();
         giris.setVisible(true);
@@ -631,6 +621,12 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
     }
     public JLabel getrivalNick() {
         return rivalNick;
+    }
+    public JLabel getMyTurn(){
+        return myTurn;
+    }
+    public JLabel getRivalsTurn(){
+        return rivalsTurn;
     }
     public JButton geta1() {
         return a1;
@@ -723,16 +719,17 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
     private javax.swing.JButton b5;
     private javax.swing.JButton b6;
     private javax.swing.JTextField bH;
+    private javax.swing.JLabel bck;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JLabel myTurn;
     private javax.swing.JButton newGameB;
     private javax.swing.JLabel nickL;
-    private javax.swing.JLabel rakipHak;
     private javax.swing.JLabel rivalNick;
+    private javax.swing.JLabel rivalsTurn;
     private javax.swing.JButton rulesB;
-    private javax.swing.JLabel yourHak;
     // End of variables declaration//GEN-END:variables
 
 }

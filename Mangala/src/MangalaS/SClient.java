@@ -65,18 +65,19 @@ public class SClient {
                             TheClient.pairThread.start();
                             break;
                         case Disconnect:
+                            ///??
                             break;
                         case Text:
-                            //
-                            Server.Send(TheClient.rival, received);
                             break;
                         case Pits:
                             //gelen seçim yapıldı mesajını rakibe gönder
                             Server.Send(TheClient.rival, received);
-                            System.out.println("Rakip meşazı aldı");
                             break;
                         case WhosTurn:
                             
+                            break;
+                        case Sent:
+                            Server.Send(TheClient.rival, received);
                             break;
                         case Bitis:
                             break;
@@ -145,11 +146,11 @@ public class SClient {
                         
                         //Oynama hakkının kimde olduğunu belirtmek için 1 veya 2 göndererek kontrol yapılır
                         msg1 = new Message(Message.Message_Type.WhosTurn);
-                        msg1.content = 1;
+                        msg1.content = 0;
                         Server.Send(TheClient.rival, msg1);
 
                         msg2 = new Message(Message.Message_Type.WhosTurn);
-                        msg2.content = 2;
+                        msg2.content = 1;
                         Server.Send(TheClient, msg2);
                     }
                     //lock mekanizmasını servest bırak

@@ -1,6 +1,7 @@
 package Mangala;
 
 import MangalaCl.Client;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -13,15 +14,18 @@ public class Entry extends javax.swing.JFrame {
     public Entry() {
         initComponents();
         this.setResizable(false);
+        this.setSize(337, 370);
         this.setLocation(250, 250);
         this.setDefaultCloseOperation(this.DO_NOTHING_ON_CLOSE);
         jLabel1.setFont(new Font("Courier New", Font.BOLD, 20));
+        jLabel1.setForeground(Color.white);
         addWindowListener(new WindowAdapter(){
             @Override
             public void windowClosing(WindowEvent e){
             int n = JOptionPane.showConfirmDialog(e.getWindow(),"Çıkış yapmakta ısrarcı mıyız?","Çıkış yapılıyor...",JOptionPane.YES_NO_OPTION);
                 if (n == 0) {
                 e.getWindow().dispose();
+                System.exit(1);
                 }
                 else if(n == 1) {
                 System.out.println("Çıkış iptal edildi.");
@@ -40,10 +44,13 @@ public class Entry extends javax.swing.JFrame {
         exit = new javax.swing.JButton();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 32767));
         jSeparator1 = new javax.swing.JSeparator();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setText("MANGALA");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 60, -1, -1));
 
         start.setText("Oyuna Başla");
         start.addActionListener(new java.awt.event.ActionListener() {
@@ -51,6 +58,7 @@ public class Entry extends javax.swing.JFrame {
                 startActionPerformed(evt);
             }
         });
+        getContentPane().add(start, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 130, -1, -1));
 
         rules.setText("Kurallar");
         rules.addActionListener(new java.awt.event.ActionListener() {
@@ -58,6 +66,7 @@ public class Entry extends javax.swing.JFrame {
                 rulesActionPerformed(evt);
             }
         });
+        getContentPane().add(rules, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 180, 101, -1));
 
         exit.setText("Çıkış");
         exit.addActionListener(new java.awt.event.ActionListener() {
@@ -65,43 +74,12 @@ public class Entry extends javax.swing.JFrame {
                 exitActionPerformed(evt);
             }
         });
+        getContentPane().add(exit, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 230, 101, -1));
+        getContentPane().add(filler1, new org.netbeans.lib.awtextra.AbsoluteConstraints(557, 222, -1, -1));
+        getContentPane().add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 80, 101, 10));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(299, 299, 299)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(exit, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(rules, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(start, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.LEADING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 157, Short.MAX_VALUE)
-                .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(143, 143, 143))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(311, 311, 311)
-                .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(69, 69, 69)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(37, 37, 37)
-                .addComponent(start)
-                .addGap(18, 18, 18)
-                .addComponent(rules)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(exit)
-                    .addComponent(filler1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(80, Short.MAX_VALUE))
-        );
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/background.jpg"))); // NOI18N
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(-14, -4, 360, 370));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -149,7 +127,7 @@ public class Entry extends javax.swing.JFrame {
             r.dispose();
         }
         this.dispose();
-        
+        System.exit(1);
     }//GEN-LAST:event_exitActionPerformed
 
     /**
@@ -192,6 +170,7 @@ public class Entry extends javax.swing.JFrame {
     private javax.swing.JButton exit;
     private javax.swing.Box.Filler filler1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton rules;
     private javax.swing.JButton start;
