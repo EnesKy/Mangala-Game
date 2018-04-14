@@ -9,10 +9,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import Mangala.Entry;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -97,7 +94,7 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
                 
                 if (gameOver(pit) == 1) {
                     System.out.println(nickL + "IS WON CONGRATS!!!");
-                    JOptionPane.showMessageDialog(this,nickL + "IS WON CONGRATS!!! Score = " + pit[1][6], "GAME OVER", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this,nickL.getText() + "IS WON CONGRATS!!! Score = " + pit[1][6], "GAME OVER", JOptionPane.INFORMATION_MESSAGE);
                     enableButtons(false);
                     Message msg = new Message(Message.Message_Type.Disconnect);
                     msg.content = 1;
@@ -113,7 +110,7 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
                 }
                 else if(gameOver(pit) == 0){
                     System.out.println(rivalNick + "IS WON CONGRATS!!!");
-                    JOptionPane.showMessageDialog(this,rivalNick + "IS WON CONGRATS!!! Score = " + pit[0][0], "GAME OVER", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this,rivalNick.getText() + "IS WON CONGRATS!!! Score = " + pit[0][0], "GAME OVER", JOptionPane.INFORMATION_MESSAGE);
                     enableButtons(false);
                     Message msg = new Message(Message.Message_Type.Disconnect);
                     msg.content = 0;
@@ -140,17 +137,15 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
                 if (sent2.equals("ok")) {
                     diziAktar(pit);
                     sent2 = "tamam";
-                    if (turn == 1) {
+                    if (turn == 1)
                     turn = 0;
-                    }
-                    else if(turn == 0) {
+                    else if(turn == 0)
                     turn = 1;
-                    }
                 }
                 try {
                     th.sleep(100);
                     if (sent && sent2.equals("tamam")) {
-                        //th.sleep(2000); //az bi aktarma süresi ekleyelim.
+                        //th.sleep(500); //az biraz aktarma süresi ekleyelim.
                         diziAktar(pit);
                         pit = RivalsPit;
                         sent = false;
@@ -337,7 +332,7 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
             case "a1":
                 System.out.println("a1 pressed!");
                 if (!myTurn.isVisible()) {
-                    JOptionPane.showMessageDialog(this, "Sıra rakipte", "Yanlış Kuyu", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Sıranızı beklemelisiniz.", "Sıra rakipte", JOptionPane.ERROR_MESSAGE);
                     break;
                 }
                 gamePlay("a1");
@@ -345,7 +340,7 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
             case "a2":
                 System.out.println("a2 pressed!");
                 if (!myTurn.isVisible()) {
-                    JOptionPane.showMessageDialog(this, "Sıra rakipte", "Yanlış Kuyu", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Sıranızı beklemelisiniz.", "Sıra rakipte", JOptionPane.ERROR_MESSAGE);
                     break;
                 }
                 gamePlay("a2");
@@ -353,7 +348,7 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
             case "a3":
                 System.out.println("a3 pressed!");
                 if (!myTurn.isVisible()) {
-                    JOptionPane.showMessageDialog(this, "Sıra rakipte", "Yanlış Kuyu", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Sıranızı beklemelisiniz.", "Sıra rakipte", JOptionPane.ERROR_MESSAGE);
                     break;
                 }
                 gamePlay("a3");
@@ -361,7 +356,7 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
             case "a4":
                 System.out.println("a4 pressed!");
                 if (!myTurn.isVisible()) {
-                    JOptionPane.showMessageDialog(this, "Sıra rakipte", "Yanlış Kuyu", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Sıranızı beklemelisiniz.", "Sıra rakipte", JOptionPane.ERROR_MESSAGE);
                     break;
                 }
                 gamePlay("a4");
@@ -369,7 +364,7 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
             case "a5":
                 System.out.println("a5 pressed!");
                 if (!myTurn.isVisible()) {
-                    JOptionPane.showMessageDialog(this, "Sıra rakipte", "Yanlış Kuyu", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Sıranızı beklemelisiniz.", "Sıra rakipte", JOptionPane.ERROR_MESSAGE);
                     break;
                 }
                 gamePlay("a5");
@@ -377,7 +372,7 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
             case "a6":
                 System.out.println("a6 pressed!");
                 if (!myTurn.isVisible()) {
-                    JOptionPane.showMessageDialog(this, "Sıra rakipte", "Yanlış Kuyu", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Sıranızı beklemelisiniz.", "Sıra rakipte", JOptionPane.ERROR_MESSAGE);
                     break;
                 }
                 gamePlay("a6");
@@ -407,11 +402,10 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Rakibin kuyusuna dokunmamalısın.", "Yanlış Kuyu", JOptionPane.ERROR_MESSAGE);
                 break;
             case "rulesB":
-                if (Rules.isOpen) {
+                if (Rules.isOpen)
                     System.out.println(" Already Open");
-                } else {
+                else 
                     Entry.r.setVisible(true);
-                }
                 break;
         }
     }
@@ -428,32 +422,31 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         if (a[0][1] == 0 && a[0][2] == 0 && a[0][3] == 0 && a[0][4] == 0 && a[0][5] == 0 && a[0][6] == 0) {
             a[0][0] = a[1][0] + a[1][1] + a[1][2] + a[1][3] + a[1][4] + a[1][5];
             a[1][0] = a[1][1] = a[1][2] = a[1][3] = a[1][4] = a[1][5] = 0 ;
+            finish = true;
             return 0; //if 0 return rivalNick
         } 
         if (a[1][0] == 0 && a[1][1] == 0 && a[1][2] == 0 && a[1][3] == 0 && a[1][4] == 0 && a[1][5] == 0) {
             a[1][6] = a[0][1] + a[0][2] + a[0][3] + a[0][4] + a[0][5] + a[0][6];
             a[0][1] = a[0][2] = a[0][3] = a[0][4] = a[0][5] = a[0][6] = 0 ;
+            finish = true;
             return 1; // if 1 return nickL
         }
         return 2;
     }
     
     public void diziDoldur() {
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 7; j++) {
+        for (int i = 0; i < 2; i++) 
+            for (int j = 0; j < 7; j++) 
                 pit[i][j] = 4;
-            }
-        }
+        
         pit[1][6] = 0; // aH set to 0
         pit[0][0] = 0; // bH set to 0
     }
 
     public void diziCevir() {
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 7; j++) {
+        for (int i = 0; i < 2; i++) 
+            for (int j = 0; j < 7; j++) 
                 RivalsPit[i][j] = pit[(i + 1) % 2][6 - j];
-            }
-        }
     }
 
     public void diziAktar(int [][] a) {
@@ -465,19 +458,43 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         bH.setText(a[0][0] + "");
     }
 
-    public int movePit(int pitValue, int pitNo) {
-        int temp = 0;
-        int lastIndex = 0;
-        boolean passed = false;
-        if (pitValue > 0) {
-            if (pitValue == 1) { 
+    public int movePit(int pitsValue, int rightPitCoord) {
+        int temp = 0, lastIndex = 0;
+        boolean passed = false, onChest = false, mutual = false, evenGoes2Chest = false;
+        if (pitsValue > 0) {
+            if (pitsValue == 1) {
+                if (pit[1][rightPitCoord] == 0) { //yandaki pitte taş yoksa 3.kural gerçekleşir
+                   pit[1][rightPitCoord] += 1; 
+                    if (rightPitCoord != 6) { 
+                        pit[1][6] += pit[0][rightPitCoord+1] + pit[1][rightPitCoord];
+                        pit[1][rightPitCoord] = pit[0][rightPitCoord+1] = 0;
+                        mutual = true;
+                    }
+                }
+                if (rightPitCoord == 6) {
+                    oneMore = true;
+                }
+                else
+                    pit[1][rightPitCoord] += 1;
+                if(mutual)
+                    JOptionPane.showMessageDialog(this, "Son taşınız, boş bir kuyunuza denk geldiği için boş kuyunuzun\n karşısındaki kuyudaki taşları hazinenize kattınız.", "", JOptionPane.INFORMATION_MESSAGE);
                 return 0;
-            } else if (pitValue > 1 && pitValue <= 7) {
-                for (int i = 0; i < pitValue - 1; i++) {
-                    if (i + pitNo < 7){ //Alt oneMore için
-                        pit[1][i + pitNo]++;
+            } else if (pitsValue > 1 && pitsValue <= 7) {
+                for (int i = 0; i < pitsValue - 1; i++) {
+                    if (i + rightPitCoord < 7){
+                        if (i+rightPitCoord == 6) 
+                            onChest = true;
+                        if (i + rightPitCoord <= 5) { //ilk 6 kuyudayken 3.kurala bakarız
+                            int a = (rightPitCoord-1)+(pitsValue-1);
+                            int b = pitsValue - 2;
+                            if (i == b && pit[1][a] == 0) {
+                                mutual = true;
+                            } 
+                        }
+                        pit[1][i + rightPitCoord]++;
                     }
                     else { //üst sıraya geçince...
+                        mutual = onChest = false;
                         passed = true;
                         pit[0][6 - temp]++;
                         lastIndex = 6-temp;
@@ -488,26 +505,39 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
                     //Son taş karşı kuyulardan birini çift sayı yaparsa. O kuyudaki taşların hepsini hazinesine katar.
                             pit[1][6] += pit[0][lastIndex];
                             pit[0][lastIndex] = 0;
-                        }
+                            evenGoes2Chest = true;
+                   }
+                if (onChest && !passed) 
+                    oneMore = true;
+                if(evenGoes2Chest)
+                    JOptionPane.showMessageDialog(this, "Son taşınız, rakibin kuyularından birini çift sayı yaptı\n ve o kuyudaki tüm taşları hazinenize kattınız.", "", JOptionPane.INFORMATION_MESSAGE);
+                if(mutual){
+                    pit[1][6] += pit[0][(rightPitCoord-1) + (pitsValue-1)+1] + pit[1][(rightPitCoord-1) + (pitsValue-1)];
+                    pit[0][(rightPitCoord-1) + (pitsValue-1)+1] = pit[1][(rightPitCoord-1) + (pitsValue-1)] = 0;
+                    JOptionPane.showMessageDialog(this, "Son taşınız, boş bir kuyunuza denk geldiği için boş kuyunuzun\n karşısındaki kuyudaki taşları hazinenize kattınız.", "", JOptionPane.INFORMATION_MESSAGE);
+                }
                 return 1;
-            } else if (pitValue > 7) { 
-                pitValue--;//İlk kuyuya 1 tane bıraktık.
-                while (pitNo<7) {//Alt bölgedeki işlemler...                    
-                    pit[1][pitNo]++;
-                    pitValue--;
-                    pitNo++;
+            } else if (pitsValue > 7) { 
+                pitsValue--;//İlk kuyuya 1 tane bıraktık.
+                while (rightPitCoord<7) {//Alt bölgedeki işlemler...                    
+                    pit[1][rightPitCoord]++;
+                    pitsValue--;
+                    rightPitCoord++;
                 }
-                pitNo--; //üst tarafa geçince 7 olan pitNo değerini 6 yaparız.
-                while (pitValue>0) {//Üst bölgedeki işlemler        
-                    pit[0][pitNo]++;
-                    pitNo--;
-                    pitValue--;
+                rightPitCoord--; //üst tarafa geçince 7 olan rightPitCoord değerini 6 yaparız.
+                while (pitsValue>0) {//Üst bölgedeki işlemler        
+                    pit[0][rightPitCoord]++;
+                    rightPitCoord--;
+                    pitsValue--;
                 }
-                pitNo++; //son index için son kuyu değerini çift sayın kontrolü için alırız.
-                if (pit[0][pitNo] % 2 == 0) {
-                    pit[1][6] += pit[0][pitNo];
-                    pit[0][pitNo] = 0;
+                rightPitCoord++; //son index için son kuyu değerini çift sayın kontrolü için alırız.
+                if (pit[0][rightPitCoord] % 2 == 0) {
+                    pit[1][6] += pit[0][rightPitCoord];
+                    pit[0][rightPitCoord] = 0;
+                    evenGoes2Chest = true;
                 }
+                if(evenGoes2Chest)
+                    JOptionPane.showMessageDialog(this, "Son taşınız, rakibin kuyularından birini çift sayı yaptı\n ve o kuyudaki tüm taşları hazinenize kattınız.", "", JOptionPane.INFORMATION_MESSAGE);
                 return 1;
             }
         } else {
@@ -523,43 +553,31 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
                 if (pit[1][0] == 0) 
                     break; //kS += 1;
                 pit[1][0] = movePit(pit[1][0], 1);
-                if (pit[1][0] == 0) 
-                    pit[1][1] += 1;
                 break;
             case "a2":
                 if (pit[1][1] == 0)
                     break;
                 pit[1][1] = movePit(pit[1][1], 2);
-                if (pit[1][1] == 0)
-                    pit[1][2] += 1;
                 break;
             case "a3":
                 if (pit[1][2] == 0) 
                     break;
                 pit[1][2] = movePit(pit[1][2], 3);
-                if (pit[1][2] == 0) 
-                    pit[1][3] += 1;
                 break;
             case "a4":
                 if (pit[1][3] == 0) 
                     break;
                 pit[1][3] = movePit(pit[1][3], 4);
-                if (pit[1][3] == 0) 
-                    pit[1][4] += 1;
                 break;
             case "a5":
                 if (pit[1][4] == 0) 
                     break;
                 pit[1][4] = movePit(pit[1][4], 5);
-                if (pit[1][4] == 0) 
-                    pit[1][5] += 1;
                 break;
             case "a6":
                 if (pit[1][5] == 0) 
                     break;
                 pit[1][5] = movePit(pit[1][5], 6);
-                if (pit[1][5] == 0) 
-                    pit[1][6] += 1;
                 break;
             default:
                 System.out.println("Select a valid kuyu");
@@ -567,8 +585,9 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         
         diziAktar(pit);
         
-        if (Client.socket.isConnected()) {//TODO bağlantı yoksa , rakip gelmediyse oyuna başlatma izin verme
-                        
+        if (Client.socket.isConnected() && !oneMore) {
+        //TODO bağlantı yoksa , rakip gelmediyse ve 1 oyun hakkın daha yoksa oyuna başlatma izin verme
+                   
             Message msg = new Message(Message.Message_Type.Pits);
             diziCevir();
             System.out.println("RivalsPit karşıya yollandı.");
@@ -580,23 +599,16 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
             msg2.content = sent2;
             Client.Send(msg2);
             sent = true;       
-            
-           /* Message msg3 = new Message(Message.Message_Type.WhosTurn);
-            if(turn == 0){
-                msg3.content = 1;
-                turn = 1;
-            }
-            else{
-                msg3.content = 0;
-                turn = 0;
-            }
-            Client.Send(msg3);*/
              
             System.out.println("gameplayden mesaj yollandı");
         }
         else
             System.out.println("Client bağlantısı yok.");
         
+        if (oneMore) { //Oyun hakkı silinir.
+            JOptionPane.showMessageDialog(this, "Son taşınızı hazinenize kattığınız için bir oyun hakkı daha kazandınız.", "1 Oyun hakkı kazandınız.", JOptionPane.INFORMATION_MESSAGE);
+            oneMore = false;
+        }
     }
 
     private void newGameBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newGameBActionPerformed
