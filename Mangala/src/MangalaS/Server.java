@@ -12,22 +12,16 @@ import Mangala.Message;
 class ServerThread extends Thread {
 
     public void run() {
-        //server kapanana kadar dinle
+        //works until server closes
         while (!Server.serverSocket.isClosed()) {
             try {
                 Server.Display("Client Bekleniyor...");
-                Socket clientSocket = Server.serverSocket.accept();//Client gelene kadar Blocking
+                Socket clientSocket = Server.serverSocket.accept();//Waits for any client to be accepted. Its blocking code.
                 Server.Display("Client Geldi...");
-                //gelen client soketinden bir sclient nesnesi oluştur
-                //bir adet id de kendimiz verdik
-                SClient nclient = new SClient(clientSocket, Server.IdClient);
-
-                Server.IdClient++;
-                //clienti listeye ekle.
-                Server.Clients.add(nclient);
-                //client mesaj dinlemesini başlat
+                SClient nclient = new SClient(clientSocket, Server.IdClient); //Making a SClient object with incoming clients socket number and given a id number
+                Server.IdClient++;// changing id number
+                Server.Clients.add(nclient);//Adding client to the list
                 nclient.listenThread.start();
-
             } catch (IOException ex) {
                 Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -37,30 +31,20 @@ class ServerThread extends Thread {
 
 public class Server {
 
-    //server soketi eklemeliyiz
-
     public static ServerSocket serverSocket;
     public static int IdClient = 0;
-    // Serverın dileyeceği port
-    public static int port = 0;
-    //Serverı sürekli dinlemede tutacak thread nesnesi
-    public static ServerThread runThread;
-    //public static PairingThread pairThread;
-
+    public static int port = 0; //The port number that listens by server
+    public static ServerThread runThread;//Servers listening thread
     public static ArrayList<SClient> Clients = new ArrayList<>();
+    public static Semaphore pairTwo = new Semaphore(1, true);//Semaphore object that used for pairing two Clients
 
-    //semafor nesnesi
-    public static Semaphore pairTwo = new Semaphore(1, true);
-
-    // başlaşmak için sadece port numarası veriyoruz
+    //Starting Server thread with port number
     public static void Start(int openport) {
         try {
             Server.port = openport;
             Server.serverSocket = new ServerSocket(Server.port);
-
             Server.runThread = new ServerThread();
             Server.runThread.start();
-
         } catch (IOException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -70,10 +54,10 @@ public class Server {
         System.out.println(msg);
     }
 
-    // serverdan clietlara mesaj gönderme
-    //clieti alıyor ve mesaj olluyor
+    /*
+     This method used at sending message to Clients
+     */
     public static void Send(SClient cl, Message msg) {
-
         try {
             cl.sOutput.writeObject(msg);
         } catch (IOException ex) {

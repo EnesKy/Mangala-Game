@@ -98,6 +98,9 @@ public class Entry extends javax.swing.JFrame {
         
     }//GEN-LAST:event_rulesActionPerformed
 
+    /*
+     If user enters a nick name and presses OK button then a Client object starts with ıp adress and port number.
+    */
     private void startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startActionPerformed
         // TODO add your handling code here:
         String s = (String)JOptionPane.showInputDialog( this,"","Takma adınızı giriniz.", JOptionPane.PLAIN_MESSAGE,null, null, "Oyuncu");

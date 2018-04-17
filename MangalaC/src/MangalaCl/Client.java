@@ -36,8 +36,6 @@ class Listen extends Thread {
                           Mangala.mangala.finish = true;
                            }
                         break;
-                    case Text:
-                        break;
                     case Pits:
                         Mangala.mangala.pit = (int[][]) received.content;
                         break;
@@ -48,16 +46,12 @@ class Listen extends Thread {
                     case Sent:
                         Mangala.mangala.sent2 = (String) received.content;
                         break;
-                    case Bitis:
-                        break;
                 }
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-                //Client.Stop();
                 break;
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-                //Client.Stop();
                 break;
             }
         }

@@ -11,16 +11,15 @@ import Mangala.Message;
 import static Mangala.Message.Message_Type.Pits;
 
 public class SClient {
-
     int id;
     public String name = "NoName";
     Socket soket;
     ObjectOutputStream sOutput;
     ObjectInputStream sInput;
-    Listen listenThread;//clientten gelenleri dinleme threadi
-    PairingThread pairThread;//cilent eşleştirme thredi
-    SClient rival;//rakip client
-    public boolean paired = false;//eşleşme durumu
+    Listen listenThread;//Listens the clients
+    PairingThread pairThread;
+    SClient rival;
+    public boolean paired = false;
 
     public SClient(Socket gelenSoket, int id) {
         this.soket = gelenSoket;
@@ -65,21 +64,15 @@ public class SClient {
                             TheClient.pairThread.start();
                             break;
                         case Disconnect:
-                            ///??
-                            break;
-                        case Text:
                             break;
                         case Pits:
                             //gelen seçim yapıldı mesajını rakibe gönder
                             Server.Send(TheClient.rival, received);
                             break;
                         case WhosTurn:
-                            
                             break;
                         case Sent:
                             Server.Send(TheClient.rival, received);
-                            break;
-                        case Bitis:
                             break;
                     }
                 } catch (IOException ex) {

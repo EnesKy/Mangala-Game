@@ -10,7 +10,7 @@ package Mangala;
  * @author nskmlylm
  */
 public class Message implements java.io.Serializable {
-    public static enum Message_Type {Name, Disconnect,RivalConnected, Text, Pits, Bitis,WhosTurn, Sent}
+    public static enum Message_Type {Name, Disconnect,RivalConnected, Pits,WhosTurn, Sent}
     public Message_Type type;
     public Object content;
     public Message(Message_Type t){

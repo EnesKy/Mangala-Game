@@ -53,8 +53,8 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         rivalsTurn.setVisible(false);
         myTurn.setVisible(false);
         
-        try {
-            File f = new File("C:\\Users\\nskml\\Desktop\\Dosyalar\\3.Sınıf\\Bahar Dönemi\\Bilgisayar Ağları\\Lab\\Proje1\\Mangala-Game\\MangalaC\\src\\images\\redArrow.png");
+        try {// Settings for game right indicators
+            File f = new File("src\\images","redArrow.png");
             BufferedImage bi = ImageIO.read(f);
             Image scaled = bi.getScaledInstance(75, 75, Image.SCALE_SMOOTH);
             ImageIcon icon = new ImageIcon(scaled);
@@ -64,7 +64,46 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
             Logger.getLogger(Mangala.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+        //For inital condition this sets all buttons disable
+        enableButtons(false);
+        //Fills 2D Array that used for pit values
+        diziDoldur();
+        //Gives pits their initial values
+        diziAktar(pit);
+         
+        b1.setFocusable(false);b2.setFocusable(false);b3.setFocusable(false);
+        b4.setFocusable(false);b5.setFocusable(false);b6.setFocusable(false);
+        a1.setFocusable(false);a2.setFocusable(false);a3.setFocusable(false);
+        a4.setFocusable(false);a5.setFocusable(false);a6.setFocusable(false);
+        aH.setFocusable(false);bH.setFocusable(false);
+        aH.setOpaque(true);
+        bH.setOpaque(true);
+        b1.setHorizontalAlignment(SwingConstants.CENTER);b2.setHorizontalAlignment(SwingConstants.CENTER);
+        b3.setHorizontalAlignment(SwingConstants.CENTER);b4.setHorizontalAlignment(SwingConstants.CENTER);
+        b5.setHorizontalAlignment(SwingConstants.CENTER);b6.setHorizontalAlignment(SwingConstants.CENTER);
+        a1.setHorizontalAlignment(SwingConstants.CENTER);a2.setHorizontalAlignment(SwingConstants.CENTER);
+        a3.setHorizontalAlignment(SwingConstants.CENTER);a4.setHorizontalAlignment(SwingConstants.CENTER);
+        a5.setHorizontalAlignment(SwingConstants.CENTER);a6.setHorizontalAlignment(SwingConstants.CENTER);
+        aH.setHorizontalAlignment(SwingConstants.CENTER);bH.setHorizontalAlignment(SwingConstants.CENTER);
+        nickL.setHorizontalTextPosition(SwingConstants.CENTER);
+        rivalNick.setHorizontalTextPosition(SwingConstants.CENTER);
         
+        //Naming all buttons for actionperformed actions
+        a1.setActionCommand("a1"); a1.addActionListener(this);
+        a2.setActionCommand("a2"); a2.addActionListener(this);
+        a3.setActionCommand("a3"); a3.addActionListener(this);
+        a4.setActionCommand("a4"); a4.addActionListener(this);
+        a5.setActionCommand("a5"); a5.addActionListener(this);
+        a6.setActionCommand("a6"); a6.addActionListener(this);
+        b1.setActionCommand("b1"); b1.addActionListener(this);
+        b2.setActionCommand("b2"); b2.addActionListener(this);
+        b3.setActionCommand("b3"); b3.addActionListener(this);
+        b4.setActionCommand("b4"); b4.addActionListener(this);
+        b5.setActionCommand("b5"); b5.addActionListener(this);
+        b6.setActionCommand("b6"); b6.addActionListener(this);
+        rulesB.setActionCommand("rulesB"); rulesB.addActionListener(this);
+        
+        //Settings for frame closing actions
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -73,21 +112,19 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
                     Entry.r.setVisible(false);
                     Entry.r.dispose();
                 }
-                if (n == 0) {
+                if (n == 0) {//If clicked OK
                     Client.Stop();//DISCONNECT
                     System.exit(1);
                     mangala.dispose();
-                } else if (n == 1) {
+                } else if (n == 1) {//If clicked Cancel
                     System.out.println("Çıkış iptal edildi.");
                 }
             }
         });
         
-        diziDoldur();
-        diziAktar(pit);
-        
         th = new Thread(() -> {
             
+            //Enable Butttons when game starts
             enableButtons(true);
             
             while (Client.socket.isConnected() && !finish) {
@@ -125,27 +162,26 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
                     }
                 }
                 
-                if (turn == 1) {
+                if (turn == 1) { //turn = 1 means that its first clients turn
                     myTurn.setVisible(true);
                     rivalsTurn.setVisible(false);
                 }
-                else if(turn == 0) {
+                else if(turn == 0) { //turn = 0 means that its rival clients turn
                     myTurn.setVisible(false);
                     rivalsTurn.setVisible(true); 
                 }
                 
-                if (sent2.equals("ok")) {
+                if (sent2.equals("ok")) { //If message Sent2 = ok that means rival is made his turn and now its turn for other player
                     diziAktar(pit);
                     sent2 = "tamam";
                     if (turn == 1)
-                    turn = 0;
+                        turn = 0;
                     else if(turn == 0)
-                    turn = 1;
+                        turn = 1;
                 }
                 try {
                     th.sleep(100);
-                    if (sent && sent2.equals("tamam")) {
-                        //th.sleep(500); //az biraz aktarma süresi ekleyelim.
+                    if (sent && sent2.equals("tamam")) { //Now player turns have been set. Its time for changing pit values.
                         diziAktar(pit);
                         pit = RivalsPit;
                         sent = false;
@@ -156,43 +192,11 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
                     Logger.getLogger(Mangala.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-             if (!Client.socket.isConnected()) {
+             if (!Client.socket.isConnected()) { //If client is not connected yet or disconnected this sets buttons disable
                  enableButtons(false);
             }
         });
         
-        enableButtons(false);
-        
-        b1.setFocusable(false);b2.setFocusable(false);b3.setFocusable(false);
-        b4.setFocusable(false);b5.setFocusable(false);b6.setFocusable(false);
-        a1.setFocusable(false);a2.setFocusable(false);a3.setFocusable(false);
-        a4.setFocusable(false);a5.setFocusable(false);a6.setFocusable(false);
-        aH.setFocusable(false);bH.setFocusable(false);
-        aH.setOpaque(true);
-        bH.setOpaque(true);
-        b1.setHorizontalAlignment(SwingConstants.CENTER);b2.setHorizontalAlignment(SwingConstants.CENTER);
-        b3.setHorizontalAlignment(SwingConstants.CENTER);b4.setHorizontalAlignment(SwingConstants.CENTER);
-        b5.setHorizontalAlignment(SwingConstants.CENTER);b6.setHorizontalAlignment(SwingConstants.CENTER);
-        a1.setHorizontalAlignment(SwingConstants.CENTER);a2.setHorizontalAlignment(SwingConstants.CENTER);
-        a3.setHorizontalAlignment(SwingConstants.CENTER);a4.setHorizontalAlignment(SwingConstants.CENTER);
-        a5.setHorizontalAlignment(SwingConstants.CENTER);a6.setHorizontalAlignment(SwingConstants.CENTER);
-        aH.setHorizontalAlignment(SwingConstants.CENTER);bH.setHorizontalAlignment(SwingConstants.CENTER);
-        nickL.setHorizontalTextPosition(SwingConstants.CENTER);
-        rivalNick.setHorizontalTextPosition(SwingConstants.CENTER);
-        
-        a1.setActionCommand("a1"); a1.addActionListener(this);
-        a2.setActionCommand("a2"); a2.addActionListener(this);
-        a3.setActionCommand("a3"); a3.addActionListener(this);
-        a4.setActionCommand("a4"); a4.addActionListener(this);
-        a5.setActionCommand("a5"); a5.addActionListener(this);
-        a6.setActionCommand("a6"); a6.addActionListener(this);
-        b1.setActionCommand("b1"); b1.addActionListener(this);
-        b2.setActionCommand("b2"); b2.addActionListener(this);
-        b3.setActionCommand("b3"); b3.addActionListener(this);
-        b4.setActionCommand("b4"); b4.addActionListener(this);
-        b5.setActionCommand("b5"); b5.addActionListener(this);
-        b6.setActionCommand("b6"); b6.addActionListener(this);
-        rulesB.setActionCommand("rulesB"); rulesB.addActionListener(this);
     }
 
     @SuppressWarnings("unchecked")
@@ -325,6 +329,10 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /*
+        This method makes a action according to string value from clicked button that given all the buttons at constructor. 
+        If clicked button named a1, it looks for the redArrows visiblity and location and if player has right to play method sends buttons name to GamePlay method.
+    */
     @Override
     public void actionPerformed(ActionEvent ae) {
         String action = ae.getActionCommand();
@@ -410,6 +418,7 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         }
     }
     
+    //Enables or disables all the buttons according to given parameter
     public void enableButtons(boolean b){
         b1.setEnabled(b);b2.setEnabled(b);b3.setEnabled(b);
         b4.setEnabled(b);b5.setEnabled(b);b6.setEnabled(b);
@@ -418,6 +427,10 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         aH.setEnabled(b);bH.setEnabled(b);
     }
     
+    /*
+        This method checks players pits if their values are equals to zero.
+        If it is it makes finish = true; and returns 0 or 1 according to players turn
+    */
     public int gameOver(int [][] a){
         if (a[0][1] == 0 && a[0][2] == 0 && a[0][3] == 0 && a[0][4] == 0 && a[0][5] == 0 && a[0][6] == 0) {
             a[0][0] = a[1][0] + a[1][1] + a[1][2] + a[1][3] + a[1][4] + a[1][5];
@@ -434,6 +447,7 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         return 2;
     }
     
+    //This method fills the 2D array that used for pits values for initial state.
     public void diziDoldur() {
         for (int i = 0; i < 2; i++) 
             for (int j = 0; j < 7; j++) 
@@ -443,12 +457,18 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         pit[0][0] = 0; // bH set to 0
     }
 
+    /*
+    This method intercrosses the 2D array that used for pit values.
+    Then gives it to the RivalsPit[][].
+    This method used when a player makes a play.
+    */
     public void diziCevir() {
         for (int i = 0; i < 2; i++) 
             for (int j = 0; j < 7; j++) 
                 RivalsPit[i][j] = pit[(i + 1) % 2][6 - j];
     }
-
+    
+    //This method sets buttons texts to their values.
     public void diziAktar(int [][] a) {
         a1.setText(a[1][0] + "");a2.setText(a[1][1] + "");a3.setText(a[1][2] + "");
         a4.setText(a[1][3] + "");a5.setText(a[1][4] + "");a6.setText(a[1][5] + "");
@@ -457,7 +477,11 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         b4.setText(a[0][3] + "");b5.setText(a[0][2] + "");b6.setText(a[0][1] + "");
         bH.setText(a[0][0] + "");
     }
-
+    
+    /*
+    This method is core method for the gameplay.
+    Simply this method doing the rock moves through pits and checks the game rules.
+    */
     public int movePit(int pitsValue, int rightPitCoord) {
         int temp = 0, lastIndex = 0;
         boolean passed = false, onChest = false, mutual = false, evenGoes2Chest = false;
@@ -546,7 +570,11 @@ public class Mangala extends javax.swing.JFrame implements ActionListener {
         }
         return -999;
     }
-
+    
+    /*
+        This method is second important method because it gives the parameter to movePit method and 
+        makes the comminication messaging through clients.
+    */
     public void gamePlay(String s) {
         switch (s) {
             case "a1":
